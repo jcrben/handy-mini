@@ -1,0 +1,24 @@
+# network-jail outbound allowlist for the Handy BUILD phase
+# Format: one entry per line. Either:
+#   - hostname            (matches any port)
+#   - hostname:port       (exact host+port)
+#   - *.suffix.example    (wildcard subdomain)
+#
+# All matches are case-insensitive. See docs/expected-egress.md for rationale.
+
+# --- Rust / cargo ---
+index.crates.io
+static.crates.io
+crates.io
+
+# --- cargo git deps + bun binary release fetch + AppImage tooling ---
+github.com
+codeload.github.com
+objects.githubusercontent.com
+
+# --- JavaScript / bun ---
+registry.npmjs.org
+bun.sh
+
+# --- TLS bootstrap helper for mitmproxy CA install ---
+mitm.it

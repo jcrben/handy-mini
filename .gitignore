@@ -1,0 +1,10 @@
+# Upstream Handy clone — re-clone with:
+#   git clone --depth=1 git@github.com:cjpais/Handy.git handy
+handy/
+
+# Working dirs for downloaded models / artifacts before they're bundled
+model-source/
+artifacts/
+
+# Jail runtime data (CA, observed-hosts log, flow capture)
+network-jail/runtime/

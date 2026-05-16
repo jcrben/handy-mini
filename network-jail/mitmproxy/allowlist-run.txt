@@ -1,0 +1,19 @@
+# network-jail outbound allowlist for the Handy RUN phase
+# Format: see allowlist-build.txt.
+#
+# Goal: this list should be as small as possible. Anything observed here
+# that is not strictly needed for transcription is a finding.
+
+# --- Model download CDN (Whisper / Parakeet / Moonshine / etc.) ---
+# Author hosts mirrors here, NOT HuggingFace. See
+# src-tauri/src/managers/model.rs for the full URL list.
+blob.handy.computer
+
+# --- Tauri updater (Linux/macOS only; disabled on Windows) ---
+# Hits https://github.com/cjpais/Handy/releases/latest/download/latest.json
+# and may follow to objects.githubusercontent.com for the installer.
+github.com
+objects.githubusercontent.com
+
+# --- TLS bootstrap helper for mitmproxy CA install ---
+mitm.it
