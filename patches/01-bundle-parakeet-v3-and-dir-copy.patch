@@ -1,0 +1,54 @@
+diff --git a/src-tauri/src/managers/model.rs b/src-tauri/src/managers/model.rs
+index 6fab71c..39b3525 100644
+--- a/src-tauri/src/managers/model.rs
++++ b/src-tauri/src/managers/model.rs
+@@ -17,6 +17,23 @@ use std::time::{Duration, Instant};
+ use tar::Archive;
+ use tauri::{AppHandle, Emitter, Manager};
+ 
++/// Recursively copy the contents of `src` (a directory) to `dst`. Used by
++/// `migrate_bundled_models` to handle directory-shaped models like Parakeet.
++fn copy_dir_recursive(src: &Path, dst: &Path) -> std::io::Result<()> {
++    fs::create_dir_all(dst)?;
++    for entry in fs::read_dir(src)? {
++        let entry = entry?;
++        let file_type = entry.file_type()?;
++        let dst_path = dst.join(entry.file_name());
++        if file_type.is_dir() {
++            copy_dir_recursive(&entry.path(), &dst_path)?;
++        } else {
++            fs::copy(entry.path(), &dst_path)?;
++        }
++    }
++    Ok(())
++}
++
+ #[derive(Debug, Clone, Serialize, Deserialize, Type)]
+ pub enum EngineType {
+     Whisper,
+@@ -649,8 +666,10 @@ impl ModelManager {
+     }
+ 
+     fn migrate_bundled_models(&self) -> Result<()> {
+-        // Check for bundled models and copy them to user directory
+-        let bundled_models = ["ggml-small.bin"]; // Add other bundled models here if any
++        // Bundled models can be either single files (whisper-style .bin) or
++        // directories (parakeet/moonshine/etc. that extract from a tar.gz to
++        // a directory of multiple ONNX + vocab files).
++        let bundled_models = ["ggml-small.bin", "parakeet-tdt-0.6b-v3-int8"];
+ 
+         for filename in &bundled_models {
+             let bundled_path = self.app_handle.path().resolve(
+@@ -665,7 +684,11 @@ impl ModelManager {
+                     // Only copy if user doesn't already have the model
+                     if !user_path.exists() {
+                         info!("Migrating bundled model {} to user directory", filename);
+-                        fs::copy(&bundled_path, &user_path)?;
++                        if bundled_path.is_dir() {
++                            copy_dir_recursive(&bundled_path, &user_path)?;
++                        } else {
++                            fs::copy(&bundled_path, &user_path)?;
++                        }
+                         info!("Successfully migrated {}", filename);
+                     }
+                 }

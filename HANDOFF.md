@@ -70,58 +70,108 @@ Produce one `.exe` that:
     (which is a tarball that extracts to a directory of `*.onnx` + vocab).
   - `tauri.conf.json` already has `"resources": ["resources/**/*"]` glob.
 
+## What's done since first commit
+
+- **bun 1.3.14** installed globally via `mise use -g bun@latest`.
+- **Parakeet v3 int8 model downloaded and SHA256-verified.**
+  - File: `model-source/parakeet-v3-int8.tar.gz` (457 MB, gitignored)
+  - Hash: `43d37191602727524a7d8c6da0eef11c4ba24320f5b4730f1a2497befc2efa77`
+  - **Matches** the hash in Handy's source at
+    `handy/src-tauri/src/managers/model.rs:309-310`. End-to-end trust chain
+    is verified: source → git → GitHub release → downloaded bytes.
+- Tarball extracted to `model-source/parakeet-tdt-0.6b-v3-int8/`. macOS
+  `._*` AppleDouble files stripped. Contents:
+  - `encoder-model.int8.onnx` (622 MB)
+  - `decoder_joint-model.int8.onnx` (18 MB)
+  - `nemo128.onnx` (137 KB)
+  - `vocab.txt` (92 KB)
+  - `config.json` (97 B, says `model_type: nemo-conformer-tdt`)
+- **Bundling patch written** at
+  `patches/01-bundle-parakeet-v3-and-dir-copy.patch`. Two changes:
+  - Adds `parakeet-tdt-0.6b-v3-int8` to the bundled-models list in
+    `migrate_bundled_models`.
+  - Adds a `copy_dir_recursive` helper so directory-shaped models work
+    (existing code was single-file-only via `fs::copy`).
+  - Patch is also applied to the working upstream clone at
+    `handy/src-tauri/src/managers/model.rs` for immediate building.
+- Model staged at
+  `handy/src-tauri/resources/models/parakeet-tdt-0.6b-v3-int8/` so the
+  `resources/**/*` glob in `tauri.conf.json` will bundle it.
+- **Build environment is the current blocker.** Aurora is immutable, so
+  `dnf install` of webkit2gtk-4.1 etc. requires admin + reboot. Tried two
+  approaches:
+  1. `nix develop` against Handy's flake — fails at the final
+     `nix-shell-env.drv` build step with
+     `error: setting up a private mount namespace: Operation not permitted`
+     even with `--option sandbox false`. Substituters did succeed at copying
+     webkitgtk, rustc 1.94, cargo, clang, gtk3, pipewire into `/nix/store/`.
+  2. `nix print-dev-env` + source in a clean shell — bypasses the sandbox
+     but Handy's flake `shellHook` runs `bun install` automatically (outside
+     the jail) and the resulting env does not have webkit2gtk on
+     `PKG_CONFIG_PATH`. Half-broken.
+  Bwrap works on this kernel (we use it elsewhere), so user namespaces are
+  *enabled*; the nix failure is specific to its sandbox setup. Suspect
+  `unprivileged_userns_clone` or a Toolbox-style mount restriction.
+
+## Path forward for the build environment
+
+Recommended: **distrobox with a Fedora image**. That gives a writable
+userland where `dnf install` works as root (mapped to user outside) without
+touching the host. Steps:
+
+```bash
+distrobox create --name handy-build --image fedora:41
+distrobox enter handy-build
+sudo dnf install -y \
+    alsa-lib-devel pkgconf openssl-devel vulkan-devel gtk3-devel \
+    webkit2gtk4.1-devel libappindicator-gtk3-devel librsvg2-devel \
+    gtk-layer-shell gtk-layer-shell-devel cmake patchelf \
+    rust cargo
+# install bun inside the box too (or rely on host bun via shared $HOME)
+curl -fsSL https://bun.sh/install | bash
+# now from outside the box, run:
+distrobox enter handy-build -- /home/ben/handy/network-jail/build-jailed.bash
+```
+
+Mitmproxy on `127.0.0.1:18080` is reachable from inside distrobox since
+the box shares the host network namespace.
+
+Alternative paths if distrobox fails:
+- Investigate the nix sandbox error directly:
+  `sysctl kernel.unprivileged_userns_clone` and
+  `nix --print-build-logs build .#nix-shell-env 2>&1`. The single-user
+  nix tarball install on Aurora may need a specific config.
+- Skip Linux build verification entirely — pivot to a Windows-only flow
+  using a personal Windows VM or one-shot GH Actions Windows runner.
+
 ## What's next (do this in order)
 
-1. **Install bun.** Aurora is rpm-ostree (immutable). Options:
-   - `mise use -g bun@latest` (mise is the user's package manager; `bun`
-     exists in mise registry as `core:bun`)
-   - or `curl -fsSL https://bun.sh/install | bash` (installs to `~/.bun/`)
-   - Do this **outside** the jail so build allowlist isn't polluted by bun
-     installer noise. The build allowlist tolerates `bun.sh` and
-     `github.com` anyway.
+1. **Set up the build environment** — see "Path forward for the build
+   environment" section above. Top recommendation: `distrobox create
+   --name handy-build --image fedora:41` and dnf-install Tauri's deps.
 
-2. **Pull Parakeet v3 int8** from `https://blob.handy.computer/parakeet-v3-int8.tar.gz`.
-   - Record SHA256 to `~/handy/model-source/parakeet-v3-int8.sha256`.
-   - Extract under `~/handy/model-source/` (NOT yet into the Handy src tree).
-   - Open question: do we ALSO want to cross-check against an NVIDIA
-     official source? Their `nvidia/parakeet-tdt-0.6b-v3` HF repo ships
-     `.nemo` (NeMo format), not int8 ONNX. Converting to int8 ONNX is the
-     work blob.handy.computer is doing on our behalf. Two trust-axis
-     options:
-       - Accept the int8 ONNX from blob.handy.computer + smoke-eval to
-         catch tampering (pragmatic).
-       - Reproduce the int8 quantization locally from NVIDIA's `.nemo`
-         (high-effort, gives full provenance).
-     Pick before step 5.
+2. **(Optional but recommended) Disable the Tauri updater** so the runtime
+   never phones home for updates. Either remove `tauri-plugin-updater`
+   from `handy/src-tauri/Cargo.toml` or unset its endpoint in
+   `handy/src-tauri/tauri.conf.json`. Verify by re-running the run-jail
+   and confirming no `github.com` hit at startup.
 
-3. **Patch `migrate_bundled_models`** at
-   `~/handy/handy/src-tauri/src/managers/model.rs:651`. Two changes:
-   - Add `parakeet-tdt-0.6b-v3-int8` to the bundled list.
-   - Teach it to copy a directory recursively when the bundled path is a
-     directory rather than a file.
-   - Optional: disable the Tauri updater outright (we want zero
-     post-install egress). Either remove `tauri-plugin-updater` from
-     `Cargo.toml` or unset its endpoint in `tauri.conf.json`.
-
-4. **Drop the model in** at
-   `~/handy/handy/src-tauri/resources/models/parakeet-tdt-0.6b-v3-int8/`.
-
-5. **First jailed build**: `~/handy/network-jail/build-jailed.bash`.
+3. **First jailed build**: `~/handy/network-jail/build-jailed.bash`.
    Capture `~/handy/network-jail/runtime/data/observed-hosts.jsonl`. Diff
    observed hosts against `allowlist-build.txt`. Iterate until clean (no
    `http_request_blocked` records). Hosts not in the allowlist but
    legitimate → add to allowlist; hosts unexpected → investigate.
 
-6. **First jailed run**: `~/handy/network-jail/run-jailed.bash --release`.
+4. **First jailed run**: `~/handy/network-jail/run-jailed.bash --release`.
    Drive: first-launch, two transcriptions, idle 60s. Confirm zero
    `blob.handy.computer` hits (because model is bundled), and updater hit
-   to `github.com` if not patched out in step 3.
+   to `github.com` if not patched out in step 2.
 
-7. **Smoke-eval Parakeet** on ~100 LibriSpeech-test-clean utterances.
+5. **Smoke-eval Parakeet** on ~100 LibriSpeech-test-clean utterances.
    Compare WER to NVIDIA's published number (~5%). Catches gross
    replacement of weights. Doesn't catch a targeted backdoor.
 
-8. **Publish**:
+6. **Publish**:
    - Push this repo to `github.com/jcrben/handy-mini` (public).
    - Cross-compile Windows build (Tauri cross-compile from Linux is
      possible but cargo-tauri prefers native MSVC build; alternative:
