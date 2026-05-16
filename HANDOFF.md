@@ -113,36 +113,44 @@ Produce one `.exe` that:
   *enabled*; the nix failure is specific to its sandbox setup. Suspect
   `unprivileged_userns_clone` or a Toolbox-style mount restriction.
 
-## Path forward for the build environment
+## Build environment: distrobox handy-build (Ubuntu 24.04)
 
-Recommended: **distrobox with a Fedora image**. That gives a writable
-userland where `dnf install` works as root (mapped to user outside) without
-touching the host. Steps:
+Resolved. The box exists and the Tauri Linux deps are installed.
 
 ```bash
-distrobox create --name handy-build --image fedora:41
-distrobox enter handy-build
-sudo dnf install -y \
-    alsa-lib-devel pkgconf openssl-devel vulkan-devel gtk3-devel \
-    webkit2gtk4.1-devel libappindicator-gtk3-devel librsvg2-devel \
-    gtk-layer-shell gtk-layer-shell-devel cmake patchelf \
-    rust cargo
-# install bun inside the box too (or rely on host bun via shared $HOME)
-curl -fsSL https://bun.sh/install | bash
-# now from outside the box, run:
-distrobox enter handy-build -- /home/ben/handy/network-jail/build-jailed.bash
+distrobox create --name handy-build --image docker.io/library/ubuntu:24.04 --yes
+distrobox enter handy-build -- bash -c '
+  sudo apt-get update
+  sudo apt-get install -y --no-install-recommends \
+    build-essential libasound2-dev pkg-config libssl-dev \
+    libvulkan-dev vulkan-tools glslc \
+    libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+    librsvg2-dev libgtk-layer-shell0 libgtk-layer-shell-dev \
+    patchelf cmake curl ca-certificates git unzip
+  curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs |
+    sh -s -- -y --default-toolchain stable --profile minimal
+'
 ```
 
-Mitmproxy on `127.0.0.1:18080` is reachable from inside distrobox since
-the box shares the host network namespace.
+Versions in the box:
 
-Alternative paths if distrobox fails:
-- Investigate the nix sandbox error directly:
-  `sysctl kernel.unprivileged_userns_clone` and
-  `nix --print-build-logs build .#nix-shell-env 2>&1`. The single-user
-  nix tarball install on Aurora may need a specific config.
-- Skip Linux build verification entirely — pivot to a Windows-only flow
-  using a personal Windows VM or one-shot GH Actions Windows runner.
+- `libwebkit2gtk-4.1-dev` 2.52.3-0ubuntu0.24.04.1
+- `libgtk-3-dev` 3.24.41
+- `libasound2-dev` 1.2.11
+- rustup-installed `cargo 1.95.0` + `rustc 1.95.0` (April 2026 stable)
+
+Host `bun 1.3.14` (installed via `mise use -g bun@latest`) is visible
+inside the box because `$HOME` is shared by distrobox.
+
+Mitmproxy on `127.0.0.1:18080` is reachable from inside distrobox because
+the box shares the host's network namespace.
+
+The wrapper that ties this together is `network-jail/build-in-distrobox.bash`.
+It runs `docker compose up` on the host (BUILD phase + build allowlist),
+waits for the CA, then `distrobox enter handy-build -- bash -lc "..."` to
+run the build with the right `PATH` (`~/.cargo/bin` + bun first, ahead of
+the nix-portable cargo wrapper that's on the shared `$HOME` PATH) and the
+proxy + CA env vars.
 
 ## What's next (do this in order)
 
