@@ -34,6 +34,7 @@ JavaScript (bun). All deps come over HTTPS — no proprietary registries.
 | `codeload.github.com` | git tarball fetches | git-over-https mechanism |
 | `objects.githubusercontent.com` | LFS objects, release assets | |
 | `raw.githubusercontent.com` | unlikely but possible (build.rs fetches) | flag if seen |
+| `cdn.pyke.io` | ort-rs prebuilt ONNX Runtime tarball | Added after first jailed build flagged it. Path: `/0/pyke:ort-rs/ms@1.24.2/x86_64-unknown-linux-gnu.tar.lzma2`. Transitively required by transcribe-rs (Parakeet / Moonshine). |
 
 **Cargo git dependencies (all GitHub):**
 
