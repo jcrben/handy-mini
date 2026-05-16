@@ -15,6 +15,9 @@ crates.io
 github.com
 codeload.github.com
 objects.githubusercontent.com
+# GitHub's newer URL pattern for release-asset downloads (used by
+# cargo-tauri to fetch AppRun-x86_64 during AppImage bundling).
+release-assets.githubusercontent.com
 
 # --- JavaScript / bun ---
 registry.npmjs.org
