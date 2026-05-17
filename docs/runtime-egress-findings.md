@@ -26,59 +26,46 @@ session.
 
 ## Captured egress (30 s, app launch only)
 
-| Host | Hits | Path | Verdict |
-|---|---:|---|---|
-| `cdn.mxpnl.com:80` | 3 | `/libs/mixpanel-2-latest.min.js` | **🚨 Mixpanel analytics — undocumented, fires unconditionally on launch** |
-| `github.com:443` | 2 | `/cjpais/Handy/releases/latest/download/latest.json` + redirected to `/v0.8.3/latest.json` | Tauri updater — expected, fires on startup |
-| `release-assets.githubusercontent.com:443` | 1 | (long Azure Blob signed URL) | GitHub redirect target for updater's `latest.json`. Blocked because not in run allowlist. The updater logs `update endpoint did not respond with a successful status code` and gives up cleanly. |
+After three independent clean runs with User-Agent capture enabled, the
+deterministic egress is just the Tauri updater:
+
+| Host | Hits | UA | Path | Verdict |
+|---|---:|---|---|---|
+| `github.com:443` | 2 | `tauri-plugin-updater/2.10.0` | `/cjpais/Handy/releases/latest/download/latest.json` and the redirect to `/v0.8.3/latest.json` | Tauri updater — expected, fires on startup |
+| `release-assets.githubusercontent.com:443` | 1 | `tauri-plugin-updater/2.10.0` | (long Azure Blob signed URL for `latest.json`) | GitHub redirect target for the updater. Blocked because not in run allowlist. Updater logs `update endpoint did not respond with a successful status code` and gives up cleanly. |
 
 **Zero hits to `blob.handy.computer`** — the bundling patch eliminated
 all model-download egress, as designed.
 
+**Zero hits to Mixpanel / PostHog / any analytics vendor.** (See
+retraction below.)
+
 ## Key findings
 
-### 1. Mixpanel analytics fires on launch — undocumented
+### 1. ~~Mixpanel analytics fires on launch — undocumented~~ (RETRACTED)
 
-Three blocked requests on every launch:
+**Initial finding retracted.** The first capture pass showed three
+blocked requests to `http://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js`,
+which I attributed to Handy. Three subsequent reproductions of the same
+exact setup (clean `/tmp/handy-jail-test`, private DBus, isolated XDG,
+host-side mitmproxy) produced **zero** Mixpanel hits.
 
-```
-http://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js
-```
+Source-level grep for `mixpanel|mxpnl|posthog|analytics|telemetry` in
+`src/`, `src-tauri/src/`, the built `dist/assets/*.js`, and the
+installed `node_modules/` returns zero matches.
 
-Upstream Handy's README claims: *"Opt-in Analytics: Privacy-first
-approach with clear opt-in"* and *"Your voice stays on your computer."*
+Most likely explanation: another process on the host briefly had
+`HTTPS_PROXY=http://127.0.0.1:18080` exported (probably one of my own
+debug subshells) and its requests landed in the same observed-hosts log.
+Mitmproxy doesn't tag flows by source PID, so cross-talk between shells
+that share the same `HTTPS_PROXY` env value is indistinguishable in the
+log.
 
-But the v0.8.3 build (commit `e3206aa` on `main`) silently loads the
-Mixpanel SDK JS on every launch. The actual payload calls (tracking
-events) would follow once the JS loads — we couldn't observe them
-because the jail blocks the SDK script first.
-
-**This is the most important finding of the audit.** For a shadow-IT
-install at work, this is unacceptable — Mixpanel JS execution from the
-webview would phone home with event data and the user's IP each launch.
-
-Source-level grep for `mixpanel` / `mxpnl` / `posthog` / `analytics` /
-`telemetry` in `src/`, `src-tauri/src/`, `index.html` returns **zero
-matches**. The Mixpanel call is therefore likely:
-
-- bundled into the React dist via a transitive npm dependency, or
-- a runtime injection by a Tauri plugin, or
-- compiled-in via Vite's bundling (Mixpanel SDK loaded by URL even though
-  the project doesn't reference it directly).
-
-Need to track down which. Candidates to inspect:
-
-- `dist/assets/*.js` (the built bundle) — grep there
-- Tauri plugin dependencies that may inject analytics scripts
-- Vite/React plugins that add tracking by default
-
-**Mitigations:**
-
-- Block at the jail level (Linux-only solution, won't survive at work).
-- Strip the offending dependency or build flag and rebuild.
-- Compile with a Vite plugin that intercepts and removes Mixpanel.
-- (Most robust) Patch the dist bundle post-build to remove the Mixpanel
-  fetch.
+Lesson for the audit method: when running multiple jailed tests
+concurrently, set `HTTPS_PROXY` only inside the launch process, never
+into a parent shell. The current `build-in-distrobox.bash` and
+`run-in-distrobox.bash` wrappers already follow this pattern; the leak
+was from my interactive shell experimentation, not the wrappers.
 
 ### 2. Tauri updater fires unconditionally
 
@@ -142,10 +129,20 @@ For a paranoid build, recommend either pruning these defaults to only
 
 ## Next steps
 
-1. Track down the Mixpanel reference. Grep `dist/`. If it's in a transitive
-   dep, identify which one and strip it.
-2. Strip `tauri-plugin-updater` from `Cargo.toml`. Rebuild.
+1. ~~Track down the Mixpanel reference.~~ Retracted - it was operator error.
+2. Strip `tauri-plugin-updater` from `Cargo.toml`. Rebuild. Expected
+   result: zero outbound on launch.
 3. Optionally prune post-process providers list.
 4. Re-run the runtime test. Expect **zero** captured egress (all hosts
    blocked or never reached).
 5. Then promote to "ready to ship to work" status.
+
+## Conclusion
+
+Handy v0.8.3 with the bundled Parakeet v3 model and the directory-copy
+patch is a clean offline app *except for the unconditional Tauri updater
+hit on launch*. Strip the updater and the build is silent on the
+network. Compared to the upstream Handy install (which downloads the
+model from blob.handy.computer on first run *and* hits the updater),
+this version is materially safer for an air-gapped or
+allowlist-restricted environment.

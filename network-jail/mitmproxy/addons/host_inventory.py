@@ -62,6 +62,9 @@ def request(flow: http.HTTPFlow) -> None:
         "method": req.method,
         "path": req.path,
         "pretty_url": req.pretty_url,
+        "user_agent": req.headers.get("User-Agent", ""),
+        "referer": req.headers.get("Referer", ""),
+        "origin": req.headers.get("Origin", ""),
     }
 
     if ENFORCE_ALLOWLIST and not _is_allowed(req.host, req.port):
