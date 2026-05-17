@@ -29,5 +29,15 @@ bun.sh
 # Used transitively by transcribe-rs (Parakeet / Moonshine inference).
 cdn.pyke.io
 
+# --- MSVC cross-compile via cargo-xwin (Windows target build only) ---
+# cargo-xwin's `xwin` crate downloads the Microsoft Windows SDK + CRT
+# components from these endpoints on first build. Cache goes to ~/.cache/xwin.
+aka.ms
+dl.microsoft.com
+visualstudio.microsoft.com
+download.visualstudio.microsoft.com
+*.azureedge.net
+*.cdn.visualstudio.com
+
 # --- TLS bootstrap helper for mitmproxy CA install ---
 mitm.it
