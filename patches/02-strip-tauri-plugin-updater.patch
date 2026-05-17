@@ -12,6 +12,31 @@ index 2178369..c1ff22a 100644
  
  [target.'cfg(windows)'.dependencies]
  transcribe-rs = { version = "0.3.3", features = ["whisper-vulkan", "ort-directml"] }
+diff --git a/src-tauri/capabilities/default.json b/src-tauri/capabilities/default.json
+index d051e54..3fa7a93 100644
+--- a/src-tauri/capabilities/default.json
++++ b/src-tauri/capabilities/default.json
+@@ -7,7 +7,6 @@
+     "core:default",
+     "opener:default",
+     "store:default",
+-    "updater:default",
+     "process:default",
+     "dialog:default",
+     "global-shortcut:allow-is-registered",
+diff --git a/src-tauri/capabilities/desktop.json b/src-tauri/capabilities/desktop.json
+index b41479e..33dead3 100644
+--- a/src-tauri/capabilities/desktop.json
++++ b/src-tauri/capabilities/desktop.json
+@@ -6,7 +6,6 @@
+     "autostart:default",
+     "global-shortcut:default",
+     "autostart:default",
+-    "autostart:default",
+-    "updater:default"
++    "autostart:default"
+   ]
+ }
 diff --git a/src-tauri/src/lib.rs b/src-tauri/src/lib.rs
 index dfbc27d..af395e2 100644
 --- a/src-tauri/src/lib.rs
@@ -26,20 +51,17 @@ index dfbc27d..af395e2 100644
          .plugin(tauri_plugin_clipboard_manager::init())
          .plugin(tauri_plugin_macos_permissions::init())
 diff --git a/src-tauri/tauri.conf.json b/src-tauri/tauri.conf.json
-index 274f86b..9d299a1 100644
+index 274f86b..23e27e1 100644
 --- a/src-tauri/tauri.conf.json
 +++ b/src-tauri/tauri.conf.json
-@@ -64,12 +64,5 @@
-       }
-     }
-   },
--  "plugins": {
--    "updater": {
--      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJBQjcyMDk1MjA2NjAxRjkKUldUNUFXWWdsU0MzdXRRZi8zYzhqV2FaNUVDbDd2Rk5VM1IvWWowVXdmRFNKQ1BrMXF5RFFsLy8K",
+@@ -67,9 +67,7 @@
+   "plugins": {
+     "updater": {
+       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJBQjcyMDk1MjA2NjAxRjkKUldUNUFXWWdsU0MzdXRRZi8zYzhqV2FaNUVDbDd2Rk5VM1IvWWowVXdmRFNKQ1BrMXF5RFFsLy8K",
 -      "endpoints": [
 -        "https://github.com/cjpais/Handy/releases/latest/download/latest.json"
 -      ]
--    }
--  }
-+  "plugins": {}
++      "endpoints": []
+     }
+   }
  }

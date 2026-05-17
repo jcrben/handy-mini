@@ -146,3 +146,36 @@ network. Compared to the upstream Handy install (which downloads the
 model from blob.handy.computer on first run *and* hits the updater),
 this version is materially safer for an air-gapped or
 allowlist-restricted environment.
+
+## Update 2026-05-17: stripped build verified silent
+
+Applied `patches/02-strip-tauri-plugin-updater.patch`:
+
+- Removed `tauri-plugin-updater = "2.10.0"` from `src-tauri/Cargo.toml`
+- Removed `.plugin(tauri_plugin_updater::Builder::new().build())` from
+  `src-tauri/src/lib.rs`
+- Removed `"updater:default"` from both
+  `src-tauri/capabilities/default.json` and
+  `src-tauri/capabilities/desktop.json`
+- Kept the `plugins.updater` block in `src-tauri/tauri.conf.json` with
+  `endpoints: []` (Tauri's bundler step still reads the block to decide
+  whether to produce updater artifacts; the runtime plugin code is no
+  longer compiled in so the empty endpoints don't matter at runtime)
+
+Re-ran the jailed runtime test (clean `/tmp/handy-jail-test`, private
+DBus, isolated XDG, mitmproxy on host with run allowlist + User-Agent
+capture).
+
+Result: **zero outbound HTTP/S calls** during the full 25 s launch
+window. The `observed-hosts.jsonl` file does not even get created
+because the mitmproxy addon only writes on the first observed request.
+
+App functionality preserved:
+
+```
+[INFO] Migrating bundled model parakeet-tdt-0.6b-v3-int8 ...
+[INFO] Successfully migrated parakeet-tdt-0.6b-v3-int8
+[INFO] Auto-selecting model: parakeet-tdt-0.6b-v3
+```
+
+Stripped binary size: 68 MB (down from 70 MB).
