@@ -1,8 +1,28 @@
 ---
 title: Handy-mini handoff
-status: in-progress
-updated: 2026-05-16
+status: linux-evidence-shipped
+updated: 2026-05-17
 ---
+
+## Status milestone 2026-05-17: Linux build verified offline-clean
+
+The Linux build of Handy with the two `patches/` applied is silent on
+the network. This repo is the audit evidence trail.
+
+| Artifact | Path | Status |
+|---|---|---|
+| `target/release/handy` (Linux x86_64) | `~/handy/handy/src-tauri/target/release/handy` (68 MB) | Built and verified |
+| Parakeet v3 int8 model | `model-source/parakeet-v3-int8.tar.gz` (457 MB, gitignored) | SHA256 matches upstream-declared hash |
+| Bundling patch | `patches/01-bundle-parakeet-v3-and-dir-copy.patch` | Applied, builds, migrates model on first run |
+| Updater-strip patch | `patches/02-strip-tauri-plugin-updater.patch` | Applied, builds, zero outbound on launch |
+| Jailed build wrapper | `network-jail/build-in-distrobox.bash` | Ubuntu 24.04 distrobox `handy-build` |
+| Jailed run wrapper | `network-jail/run-in-distrobox.bash` | (Note: tauri-plugin-single-instance uses session DBus; run-tests need a private dbus-launch'd bus to bypass collisions with any host-side running Handy) |
+| Runtime egress findings | `docs/runtime-egress-findings.md` | Final result: **zero outbound** |
+
+The Windows cross-compile path via `cargo-xwin` was attempted and is
+**deferred** - see open task / "Open issues" below.
+
+
 
 # Handy-mini — handoff state
 
@@ -190,6 +210,53 @@ proxy + CA env vars.
      - `curl -LO` release artifact
      - `Get-FileHash` to verify
      - Double-click installer (NSIS supports per-user install, no admin).
+
+## Open issues for next session
+
+### Windows binary not yet built
+
+Cross-compile via `cargo-xwin` on the Ubuntu 24.04 distrobox got close
+but hit two practical blockers:
+
+1. `whisper-rs-sys` (a transitive dep of `transcribe-rs`) is set to
+   compile whisper.cpp with `GGML_VULKAN=ON` because Handy's
+   `Cargo.toml` enables the `whisper-vulkan` feature for Windows.
+   Cross-compiling `whisper.cpp` for Windows needs the Windows Vulkan
+   SDK, which `cargo-xwin` doesn't provide.
+2. `cargo-xwin` itself bypasses our `HTTPS_PROXY` (downloaded ~1.2 GB
+   of MSVC components into `~/.cache/cargo-xwin/` without showing up
+   in `observed-hosts.jsonl`). Likely uses a TLS stack that doesn't
+   respect proxy env vars. Means our build-time jail integrity is
+   weaker than we thought for tools other than cargo / bun / git.
+
+Cheaper paths for a Windows binary next time:
+
+- **Windows VM (recommended).** qemu-kvm with a Win11 VM, install MSVC
+  build tools + Rust + bun, apply the two patches from `patches/`,
+  build natively. Tauri's first-class Windows path. Adds VM setup time
+  but eliminates the cross-compile fragility.
+- **Strip whisper-vulkan + retry xwin.** Edit `src-tauri/Cargo.toml` to
+  drop the `whisper-vulkan` feature on Windows (we only need Parakeet
+  via `ort-directml` since we're bundling Parakeet). May surface yet
+  more cross-compile issues.
+- **Borrow a real Windows machine.** Cleanest but requires hardware.
+
+### Smoke-eval Parakeet not yet done
+
+Task #13. The Parakeet v3 int8 model passed SHA256 verification against
+Handy's own source-declared hash, but we have not done a WER test
+against a known set of utterances (e.g. LibriSpeech-test-clean ~100
+samples). Cheap belt-and-suspenders against a wholesale-replaced model;
+will not catch targeted backdoors.
+
+### Allowlist gap: cargo-xwin
+
+Build allowlist now lists `aka.ms`, `dl.microsoft.com`,
+`visualstudio.microsoft.com`, `download.visualstudio.microsoft.com`,
+`*.azureedge.net`, `*.cdn.visualstudio.com` for cargo-xwin's MSVC
+downloads, but in practice cargo-xwin doesn't honour `HTTPS_PROXY` so
+those records never showed up in observed-hosts. The entries are still
+useful documentation of intended hosts.
 
 ## Open questions / risks
 
