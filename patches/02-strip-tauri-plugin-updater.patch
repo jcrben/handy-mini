@@ -1,0 +1,67 @@
+diff --git a/src-tauri/Cargo.toml b/src-tauri/Cargo.toml
+index 2178369..c1ff22a 100644
+--- a/src-tauri/Cargo.toml
++++ b/src-tauri/Cargo.toml
+@@ -85,7 +85,8 @@ signal-hook = "0.3"
+ tauri-plugin-autostart = "2.5.1"
+ tauri-plugin-global-shortcut = "2.3.1"
+ tauri-plugin-single-instance = "2.3.2"
+-tauri-plugin-updater = "2.10.0"
++# tauri-plugin-updater stripped for handy-mini: we want zero outbound on
++# launch. The upstream value was: tauri-plugin-updater = "2.10.0"
+ 
+ [target.'cfg(windows)'.dependencies]
+ transcribe-rs = { version = "0.3.3", features = ["whisper-vulkan", "ort-directml"] }
+diff --git a/src-tauri/capabilities/default.json b/src-tauri/capabilities/default.json
+index d051e54..3fa7a93 100644
+--- a/src-tauri/capabilities/default.json
++++ b/src-tauri/capabilities/default.json
+@@ -7,7 +7,6 @@
+     "core:default",
+     "opener:default",
+     "store:default",
+-    "updater:default",
+     "process:default",
+     "dialog:default",
+     "global-shortcut:allow-is-registered",
+diff --git a/src-tauri/capabilities/desktop.json b/src-tauri/capabilities/desktop.json
+index b41479e..33dead3 100644
+--- a/src-tauri/capabilities/desktop.json
++++ b/src-tauri/capabilities/desktop.json
+@@ -6,7 +6,6 @@
+     "autostart:default",
+     "global-shortcut:default",
+     "autostart:default",
+-    "autostart:default",
+-    "updater:default"
++    "autostart:default"
+   ]
+ }
+diff --git a/src-tauri/src/lib.rs b/src-tauri/src/lib.rs
+index dfbc27d..af395e2 100644
+--- a/src-tauri/src/lib.rs
++++ b/src-tauri/src/lib.rs
+@@ -493,7 +493,7 @@ pub fn run(cli_args: CliArgs) {
+         }))
+         .plugin(tauri_plugin_fs::init())
+         .plugin(tauri_plugin_process::init())
+-        .plugin(tauri_plugin_updater::Builder::new().build())
++        // tauri_plugin_updater stripped for handy-mini (zero-egress build)
+         .plugin(tauri_plugin_os::init())
+         .plugin(tauri_plugin_clipboard_manager::init())
+         .plugin(tauri_plugin_macos_permissions::init())
+diff --git a/src-tauri/tauri.conf.json b/src-tauri/tauri.conf.json
+index 274f86b..23e27e1 100644
+--- a/src-tauri/tauri.conf.json
++++ b/src-tauri/tauri.conf.json
+@@ -67,9 +67,7 @@
+   "plugins": {
+     "updater": {
+       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJBQjcyMDk1MjA2NjAxRjkKUldUNUFXWWdsU0MzdXRRZi8zYzhqV2FaNUVDbDd2Rk5VM1IvWWowVXdmRFNKQ1BrMXF5RFFsLy8K",
+-      "endpoints": [
+-        "https://github.com/cjpais/Handy/releases/latest/download/latest.json"
+-      ]
++      "endpoints": []
+     }
+   }
+ }
