@@ -56,6 +56,12 @@ In `paste_via_clipboard` (Rust — this prototype's code carries over directly):
    timeout ~1000ms) instead of the fixed 50ms sleep.
 4. On consumed → restore the old clipboard as today. On lost → keep serving the
    transcript (or notify) so the user can paste manually — never silently drop.
+5. Surface the lost verdict in the tray: add a fourth `TrayIconState` (Handy
+   today has only Idle/Recording/Transcribing — `tray.rs`), e.g. `Unpasted`
+   with an attention icon, set on lost and cleared on the next successful paste
+   or manual re-fire. Today the tray returns to Idle on a lost paste because
+   Handy believes it succeeded (`paste-error` only fires when the keystroke
+   dispatch itself errors, never in this race).
 
 Caveats for the patch: the burst window is compositor/manager-specific
 (measure at startup or make configurable); a second clipboard manager would add
