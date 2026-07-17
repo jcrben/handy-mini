@@ -1,0 +1,173 @@
+diff --git a/src-tauri/resources/tray_unpasted.png b/src-tauri/resources/tray_unpasted.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..c1d67d7a7a3318ed2581e98c43837162666b4ddd
+GIT binary patch
+literal 1052
+zcmeAS@N?(olHy`uVBq!ia0y~yU~m9o4rT@hhPm4t-!L#RC?tCX`7$t6sWC7#v@kII
+zVqjosc)`F>YQVtoDuIE)Y6b&?c)^@qfi?^b408f}LR=Xb82;k{|NbE)k=bzY?;mz?
+zV!*$D-%p+Tyl&mcrAwd3$3L{PdSGbywzc(<t?jFVf@hJDr`m7tVPIg;C<*clW?)uu
+z&uQytVRcx?mcn;IpkV#|{RuB#&7WXk`o8ISK*NIb9cPz(sNWFfm}$$vz`&T~?e4<(
+zpGo%~0|NtRfk$L90|U1(2s1Lwnj^u$z`$PO>Fdh=id~RZR!DooLO})w2GtVRh?11V
+zl2ohYqSVBaR0bmhBQsqCQ(Z%|5JPh-BO@zA18oBXD+7Zk^XDp~Xvob^$xN%ntzqgR
+z)%jqrz-%bV%uOvWNz5&P>M_?fG!HQ_wKB4_GPHnLq8DD&%fP@S;OXKR5^?x#SoZW;
+z1_Hi|gC4Cq_+Z-BEgQaU+}qW)>;M1#UsW^~sW%$@-LZGR(7Bz{XP(?6@mu1@5%<TQ
+z29o_h(wVG9g6|lJJ~a4s`OF8i+eP7d=Fe=Zr4ESC3Vg>O+Ix8475SF!Ul|)7Pp!RZ
+z!Nl?B&kX&BPa(FCLYTTM#RJ{Emp;1sN75qPY)<2IKGt=w8tNJEX<OfGbiHxBeRjSG
+z({zVRAI?vePX8XA!5nujzH!qlC(aw69hp2NXEQGMYZNxv+|JODq*$<KS0Rhjc2*{f
+zFB~#4fgX$>GW}UzY51&VGHl2{urEB}{Rc&+4}0%3KV~jxWxVm_)9S3|iI>@PY+1HR
+zM6<q<d!QJQbZCy+8yl9gX;l*<=cQ}!Vm%bHNa?u4on87bMWg06Ok=ldov`N`(-a>a
+zh9}|98e121?kQ{y=oROdh<@Fr@})UuJ5!ylpw*-+_Ik5~7pl)nH+Xq6zHY*<Pn%4w
+zm`}w_u=?jUt9Zu(AGM1X2PJaNp6RM*T#mFBj6b*J?*WU6cki<0X%tTO>)EDUIN5L0
+z&inb9_O{zhCi|_5eU;|_=j&}BU-=n*6ZYLL<^DPC9_w=9O$OJNd2ZWRBha{T_jaM(
+zO@*$SQ_Z#?32qSGu=s;$z<(_PYnFdMxLo)er><|<@_WOVr}k%NXeYhYKk(zVvTZNh
+yg<h8{TuZ%<Ot^pFrR7AJQ-RP=dpn_jOtmK!K3?-pT*Sb@z~JfX=d#Wzp$Pz+4Dbv9
+
+literal 0
+HcmV?d00001
+
+diff --git a/src-tauri/resources/tray_unpasted_dark.png b/src-tauri/resources/tray_unpasted_dark.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..6a933dc27cebd1cf042e7762364dd0579a5453b9
+GIT binary patch
+literal 1539
+zcmaKsdo<Ju6vyumV;Z#R!BR5h6=7zCOkvb$ykF5GLT0RICVny6WRTa|jAsvzL~%lf
+zlU{UUQduEJ*yB-{HhG5%yLOp9)}Gz=kKOM%_n+^*pYuKUoO^DXlLKwDgrWohY__(d
+zx&Q!Wy*7ygK+%Kv834fhTe;W+oYeqeUjSGE0QLmH83MqRF97)pfIPFX!TBHnbU4|$
+zS_*|i01*C<*4F-MuB`z8@`cvfKh3uS!G;Y0%F4<Jg5YpCZEbD%LK_1t7HeQ&V0d_#
+z!{J~sm<@A1Vr^}?t?d(+yHHj(?&BjMlShff*`%bmrlwO&CIDbCnD-tY91e#<q0nfw
+z(9qE2<YYV^&*gIIbh@~>c*LAs2>|G#E)GWlMDeuHWR4hy!WE}~#g}2$j5PU9;HQc+
+z35IhCKT@37*Sk2WFK^C|#MRawIQemXv6HqmDx_kRtN;MVwDO1qkd$37B#!Qr1prvo
+z+TId7g_Xr9ZPCdrkp)1!&$_y!E`HH?W<+>EP$&bB#xNOpRu~gND=RkJBI-3k>hLnz
+zl7mOK`6|;4vZG@3+jli_e!hCw{#BdgkSdiwqGdiZ+|Kdp^<a%J2`V+F%0E!H_cDq+
+z3+D$P423<tMc!WD^Kw^?VR?v?cS`4$l$4U;N!hBDiIRfWqex_Ap9gl%Z2!5yhT!rd
+z#o)$iE+b-_av?ka&;d=sLkZ=No0$uzwA3;(Qu!nHcaGhp-FPZsj`3QS{QU;hF5Or0
+zuUqJlEXd<&Z0cx-x+`Y)UJYRb$n@1N1=U{rZvNyHzoI&6rLqb)`1}oyfLp?Ls8m?b
+z*!b1@O9bB($+?It@zapX{xvsR4)e0JB{8#KY;<dUp~Z*_tD{M;Q62G58_e&oIczPK
+zz9_m_HIS+nRcU_upm}ap?ZVolCrwGxeQ~$)x=N>)&6XSK<9U@eDteQ#V||Sx?&lF<
+zMjiRvPbMt@ppII)qjW!%LH3Ve_@N9S5lBY51Vde-kt@-dOd^qq1RVl_Odz}~F53Ms
+zAS|376cF>@Kwh(YF#u@&oqz^~F(OgFFy>#3u`bcrm0(CFnUIP5H$wEjiMY6aGvN^q
+zu1HsDbUuKHoi)|M)&1%0rI6@+icE6J2`$!fZz;n|a%tt4KfAf^%lU3_O(@K*lT1_d
+zrh7MiE?im_+c|zZASx<g?{rOWwZ19uk>}%XH2>n+*~bWP(X+o|tUd)9R0=ZoQER6Y
+zFLxC!A>in)R&^#n=&{W+tfTxW8H~DqGVvGXoxTTec4db4JQ&oV)I5^rt%!E6`Ynq+
+zv~z0^b7&Z2vvc@;*io|EwBkfPgZ=v2skT}5CwoMHApJH(68e<R+dy-C&jJl^y}Sn*
+zw1M5F{QC!ZQTo1;XfB(b`fygH0Btg2AO8@Ky{!WwS231f9a5F>+^*1ihwmbCPIX1>
+zwl<<8n<&E9EbZ!(ZT&h}n{Cys^geGXh)nbLXfx|Jl~ZJ66m2Nf&)2gKXFV@pF<L<r
+z%fx+g<I+&@Y=Iv5!9p!u)wt7wS})}&sNX7Mn%@_%rJ`7rc8Y#1?WpSa2DI~vZ!oeJ
+znMn~L=#EI~y&*eKC@dzr-xU!gDD~*)WIUtlT#*3DxE+hs7%2nd)r6kN8{C637qoVS
+zWxVk6eT(1Ut`X8jC%rg%ZLF>@(5Qu!>R(>Bso6ZhJk!E1W5DU0hXZZKDt@o#u{&k4
+z-TklVCJWc+b?P<GuSUf!|Kc6uxJ@a(IbF3mKwePwZU$3Z5o#+4Bz2lo4TALAylhP@
+zlABGWeTI+ZLkN~tU7^QTmYlZ*a}-(K!gG@6^%AAf*>r<)eDS2{?a`U)n0|Afm+DHA
+s>qlp_bz~0jyiehXvoHO3A7S=2@Ven98;ecPSbw0_mJU?zA>V{Q05ZUhH2?qr
+
+literal 0
+HcmV?d00001
+
+diff --git a/src-tauri/resources/unpasted.png b/src-tauri/resources/unpasted.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..30dafc9c90bac445efee30264164d93ad8c7457c
+GIT binary patch
+literal 1213
+zcmaKmdrXrD6vb}~T^o4_69+>#I~59XkgwgqQ7}|ql?e<15h7Y1r3uKRfln#Oq(dZi
+zVCq1yB|x9R3=EjVi836@2DAmsD8a{ch$3Sh40$-(uh1^cWy}89ZgP{8d-6Nyo{x@V
+z+HG>(1ORs72SQ>1fU&V8D*$M?{>dBwkkbytL;@7K1MtfLFaY4s0-Qtu^vM8p5r8wd
+z{^p?o09cNWhzn(MBLKkiKVvrkW17vD4y{2pWK^gyx!NdK8RaUA*}U2^XkIa3ia#$B
+z71laxk!X!_)v9FBC{t}{r3U+Q%%sp5Wh#?=7?Y_nnc5&7!sHrDi*_SQsam`H)F@M#
+z7k@V|8`dXgF{Q>JA9`h(lp3R4g~>Fl(!q^q%;r_Kdbz!Qv8m~27Hf)5e?q0spF8(-
+z-#$H;i^<iPQZtj7xIQs!x^d6+&4V@7lXcyUsr`rbso&NHCJ!-l3IV_$jfsi{up%?F
+z%7xYhM*C}Q`%wpO$K<!kvt+&GBI4t)Kwco14l?-BT!~am)(Qn3Bgz+((h@`{lyvHX
+zm+AokmwJ#Hg6G&2vjKpJhDU}H^+ZR)Td(iAD02h=H#9T>Wv8I&^t8P66f_-Z2+h|E
+z@$sVi#!>guX*4<&*@GZ-1eumJ?D`jwoy*SP6#h3*bH_~r03Lrgpc&ce`DjWu_b+Cz
+z7j<tO;zOtT(WxK2D)By&cL4yO6dtlaE}?(E_C!G)!=YSuoW$#Yw>dJF+|0<QM&|yK
+z?X-1d`eB#Fa&Kk0bilo$O>?<XcS~~VnW_7|;k%X1>osG~-H5#SD--&#-uN%FJRzbL
+zw>dLmhQsGnn93Er?ZWc4{MH+|zMaefvHO+gYSG&XS3w8-2X`8%97q<$@J|uRjTE7e
+z5J#Us2|Ya{BHf7vNZP&g7|eAo<Fs#9d9xtNE%g`<9S&g34E|aiNO39TKOQfsE-<G%
+z#oP1kU*s)pWz@ID+KxKmlR{R|UIN0h5m|MW!45}p4t}`mWgSjrq;x_vf$ym;B@<18
+z`?*eR@<>oHiR-Wk$uT5Rv@M?D?8tIv_N9F;fJ<dZUEaW|*`&iMp8kRYqzWpf?$*|V
+zz}<NV65A?r6=&}uwNQDRhwnU{;u5N-kPMM*wI2zoetI+k#eaAD8l4yXQ~xe~SY{2c
+zQXp$K+Ag+?9g~tUSIQ%g#{+ZLbzfgExiY>vD3d^W-#KWlY3#G4OoA1@8?`>yIK=Ar
+zjC2nyZXK`D3LKP*k!Z1vcQ1+4QhiN96Z5DN&R2&se9Hp_G@ZDVtDYkU2#$;GzMpy?
+zm&#l!^n2iU^r8QGuM3yA_$L~-PHvej>F(*ZcwD2L*;!g}>(kNsd|_i)3>5VJSap5d
+z$5A`(-*(O!?5L}M^ei+tc)(@3cJfv@zKhr=aUH@ZB=W1R4Bj@gGf;FDj%@E2w*_X;
+ze>B~_1S5e(S*tg<-S?CCRDF2LC2MK*;LEdQJz+mfwZ^hkov}KiYfna{?~DTggoj3j
+Jv<D@Z{sD01N%{Z)
+
+literal 0
+HcmV?d00001
+
+diff --git a/src-tauri/src/actions.rs b/src-tauri/src/actions.rs
+index 50792ac..dc75bbd 100644
+--- a/src-tauri/src/actions.rs
++++ b/src-tauri/src/actions.rs
+@@ -607,18 +607,24 @@ impl ShortcutAction for TranscribeAction {
+                                 let paste_time = Instant::now();
+                                 let final_text = processed.final_text;
+                                 ah.run_on_main_thread(move || {
+-                                    match utils::paste(final_text, ah_clone.clone()) {
+-                                        Ok(()) => debug!(
+-                                            "Text pasted successfully in {:?}",
+-                                            paste_time.elapsed()
+-                                        ),
++                                    let icon = match utils::paste(final_text, ah_clone.clone()) {
++                                        Ok(()) => {
++                                            debug!(
++                                                "Text pasted successfully in {:?}",
++                                                paste_time.elapsed()
++                                            );
++                                            TrayIconState::Idle
++                                        }
+                                         Err(e) => {
+                                             error!("Failed to paste transcription: {}", e);
+                                             let _ = ah_clone.emit("paste-error", ());
++                                            // Surface the lost paste in the tray until the
++                                            // next recording/paste clears it (todo 0bd694).
++                                            TrayIconState::Unpasted
+                                         }
+-                                    }
++                                    };
+                                     utils::hide_recording_overlay(&ah_clone);
+-                                    change_tray_icon(&ah_clone, TrayIconState::Idle);
++                                    change_tray_icon(&ah_clone, icon);
+                                 })
+                                 .unwrap_or_else(|e| {
+                                     error!("Failed to run paste on main thread: {:?}", e);
+diff --git a/src-tauri/src/tray.rs b/src-tauri/src/tray.rs
+index 52edbb1..1d0ef5a 100644
+--- a/src-tauri/src/tray.rs
++++ b/src-tauri/src/tray.rs
+@@ -16,6 +16,9 @@ pub enum TrayIconState {
+     Idle,
+     Recording,
+     Transcribing,
++    // A paste provably never landed (external_script verdict, todo 0bd694);
++    // cleared by the next recording/successful paste.
++    Unpasted,
+ }
+ 
+ #[derive(Clone, Debug, PartialEq)]
+@@ -51,14 +54,17 @@ pub fn get_icon_path(theme: AppTheme, state: TrayIconState) -> &'static str {
+         (AppTheme::Dark, TrayIconState::Idle) => "resources/tray_idle.png",
+         (AppTheme::Dark, TrayIconState::Recording) => "resources/tray_recording.png",
+         (AppTheme::Dark, TrayIconState::Transcribing) => "resources/tray_transcribing.png",
++        (AppTheme::Dark, TrayIconState::Unpasted) => "resources/tray_unpasted.png",
+         // Light theme uses dark icons
+         (AppTheme::Light, TrayIconState::Idle) => "resources/tray_idle_dark.png",
+         (AppTheme::Light, TrayIconState::Recording) => "resources/tray_recording_dark.png",
+         (AppTheme::Light, TrayIconState::Transcribing) => "resources/tray_transcribing_dark.png",
++        (AppTheme::Light, TrayIconState::Unpasted) => "resources/tray_unpasted_dark.png",
+         // Colored theme uses pink icons (for Linux)
+         (AppTheme::Colored, TrayIconState::Idle) => "resources/handy.png",
+         (AppTheme::Colored, TrayIconState::Recording) => "resources/recording.png",
+         (AppTheme::Colored, TrayIconState::Transcribing) => "resources/transcribing.png",
++        (AppTheme::Colored, TrayIconState::Unpasted) => "resources/unpasted.png",
+     }
+ }
+ 
+@@ -198,7 +204,7 @@ pub fn update_tray_menu(app: &AppHandle, state: &TrayIconState, locale: Option<&
+             )
+             .expect("failed to create menu")
+         }
+-        TrayIconState::Idle => Menu::with_items(
++        TrayIconState::Idle | TrayIconState::Unpasted => Menu::with_items(
+             app,
+             &[
+                 &version_i,
