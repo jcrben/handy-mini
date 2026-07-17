@@ -1,0 +1,9 @@
+[package]
+name = "paste-probe"
+version = "0.1.0"
+edition = "2021"
+description = "Own the Wayland clipboard and timestamp every read of the selection — prototype for Handy lost-paste detection (todo 0bd694)"
+
+[dependencies]
+wayland-client = "0.31"
+wayland-protocols = { version = "0.32", features = ["client", "staging"] }
