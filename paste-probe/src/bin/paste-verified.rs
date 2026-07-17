@@ -22,7 +22,7 @@
 
 use std::io::Write;
 use std::os::fd::AsFd;
-use std::process::Command;
+use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
 use wayland_client::{
@@ -193,9 +193,24 @@ fn read_current_clipboard() -> Option<String> {
 
 fn restore_clipboard(old: &Option<String>) {
     // wl-copy takes selection ownership; our source gets Cancelled, which is fine.
+    // Detach stdio: wl-copy forks a child that serves the clipboard until the
+    // next copy. If it inherits our stdout/stderr (Handy's .output() pipes),
+    // Handy never sees EOF and its paste step hangs — observed 2026-07-16 as a
+    // tray icon stuck on the pasting state.
     let result = match old {
-        Some(s) if !s.is_empty() => Command::new("wl-copy").arg("--").arg(s).status(),
-        _ => Command::new("wl-copy").arg("--clear").status(),
+        Some(s) if !s.is_empty() => Command::new("wl-copy")
+            .arg("--")
+            .arg(s)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status(),
+        _ => Command::new("wl-copy")
+            .arg("--clear")
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status(),
     };
     if result.is_err() {
         eprintln!("paste-verified: WARNING failed to restore clipboard");
@@ -205,6 +220,9 @@ fn restore_clipboard(old: &Option<String>) {
 fn notify_lost(text: &str) {
     let preview: String = text.chars().take(80).collect();
     let _ = Command::new("notify-send")
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
         .args([
             "-u",
             "critical",
@@ -269,6 +287,9 @@ fn main() {
     if !simulate {
         let status = Command::new("ydotool")
             .args(["key", "29:1", "47:1", "47:0", "29:0"])
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
             .status();
         match status {
             Ok(s) if s.success() => {}
