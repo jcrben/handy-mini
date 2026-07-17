@@ -217,21 +217,24 @@ fn restore_clipboard(old: &Option<String>) {
     }
 }
 
-fn notify_lost(text: &str) {
-    let preview: String = text.chars().take(80).collect();
-    let _ = Command::new("notify-send")
+fn record_lost_and_notify(text: &str) {
+    // Persist the lost transcript where handy-repaste.bash looks first, so
+    // Ctrl+Alt+Space recovers THIS message even after further dictations.
+    let runtime_dir = std::env::var("XDG_RUNTIME_DIR").unwrap_or_else(|_| "/tmp".into());
+    let lost_path = format!("{}/handy-lost-paste.txt", runtime_dir);
+    if let Err(e) = std::fs::write(&lost_path, text) {
+        eprintln!("paste-verified: WARNING could not write {}: {}", lost_path, e);
+    }
+    // Detached persistent notification with a Re-type action button. setsid +
+    // null stdio: it blocks until dismissed and must not hold Handy's pipes.
+    let home = std::env::var("HOME").unwrap_or_default();
+    let _ = Command::new("setsid")
+        .arg(format!("{}/dotfiles/tools/desktop/ai/handy-lost-notify.bash", home))
+        .arg(&lost_path)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
-        .args([
-            "-u",
-            "critical",
-            "-a",
-            "handy-paste-verified",
-            "Dictation did NOT land",
-            &format!("Ctrl+Alt+Space re-types it.\n\u{201c}{}\u{2026}\u{201d}", preview),
-        ])
-        .status();
+        .spawn();
 }
 
 fn main() {
@@ -325,7 +328,7 @@ fn main() {
         std::process::exit(0);
     }
     restore_clipboard(&old_clipboard);
-    notify_lost(&text);
+    record_lost_and_notify(&text);
     eprintln!(
         "paste-verified: LOST — no read within {}ms (burst_reads={})",
         VERDICT_TIMEOUT_MS, state.burst_reads
