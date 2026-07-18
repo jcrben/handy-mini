@@ -1,0 +1,20 @@
+Give the fork its own Tauri identifier so it coexists with stock Handy on the
+REAL session D-Bus bus. With the shared "com.pais.handy" identity the patched
+instance had to hide inside dbus-run-session to dodge tauri-plugin-single-instance
+— which also hid its tray icon (StatusNotifierItem never reached KDE's watcher)
+and swallowed its notifications, making the app look like it never launched.
+A distinct identifier gives it its own single-instance D-Bus name AND its own
+data dir (com.pais.handy.patched), so the launcher needs no private bus and no
+XDG_DATA_HOME override. Applies on top of patches 01-03.
+
+--- a/src-tauri/tauri.conf.json
++++ b/src-tauri/tauri.conf.json
+@@ -2,7 +2,7 @@
+   "$schema": "https://schema.tauri.app/config/2",
+   "productName": "Handy",
+   "version": "0.8.3",
+-  "identifier": "com.pais.handy",
++  "identifier": "com.pais.handy.patched",
+   "build": {
+     "beforeDevCommand": "bun run dev",
+     "devUrl": "http://localhost:1420",
