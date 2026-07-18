@@ -1,0 +1,31 @@
+Linux backend fallback: register shortcuts even when the webview never
+loads. The frontend normally calls initialize_shortcuts after the UI
+boots, but the box-built AppImage's bundled WebKit EGL-aborts on the
+Fedora host, so the call never came and ctrl+space stayed dead
+(2026-07-17). initialize_shortcuts is idempotent, so backend + frontend
+both calling it is safe. Applies on top of patches 01-04.
+
+--- a/src-tauri/src/lib.rs
++++ b/src-tauri/src/lib.rs
+@@ -571,6 +571,21 @@
+                 show_main_window(&app_handle);
+             }
+ 
++            // Linux: the frontend calls initialize_shortcuts once the webview
++            // loads, but a broken webview (e.g. bundled WebKit EGL-aborting on
++            // the host) must not leave dictation dead. The command is
++            // idempotent, so this backend fallback is safe alongside it.
++            #[cfg(target_os = "linux")]
++            {
++                let handle = app_handle.clone();
++                std::thread::spawn(move || {
++                    std::thread::sleep(std::time::Duration::from_secs(3));
++                    if let Err(e) = crate::commands::initialize_shortcuts(handle) {
++                        log::error!("Backend fallback shortcut init failed: {}", e);
++                    }
++                });
++            }
++
+             Ok(())
+         })
+         .on_window_event(|window, event| match event {
